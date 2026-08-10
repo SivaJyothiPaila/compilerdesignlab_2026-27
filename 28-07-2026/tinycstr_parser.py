@@ -30,7 +30,11 @@ class TinyCStrParser(Parser):
     #     ('left', ...),
     #     ('left', ...),
     # )
+    precedence=(
+        ('left',PLUS,MINUS),
+        ('left',TIMES,DIVIDE,REMAINDER),
 
+    )
     def __init__(self):
         self.had_error = False
 
@@ -45,7 +49,79 @@ class TinyCStrParser(Parser):
     # @_('func_def')
     # def program(self, p):
     #     ...
-
+    @_('func_def')
+    def program(self,value):
+        p=Program()
+        p.addFunction(value[0])
+        return p
+    
+    @_('INT ID LPAREN RPAREN LBRACE decl_stmt_list stmt_list RBRACE')
+    def func_def(self,value):
+        f=Function(value[0],value[1])
+        for s in value[5]:
+            f.localSymbolTable.addSymbol(s)
+        f.setStatementsAstList(value[6])
+       
+        return f
+    @_('decl_stmt_list decl')
+    def decl_stmt_list(self,value):
+        return value[0]+value[1]
+    @_('')
+    def decl_stmt_list(self,value):
+        return []
+    @_('INT id_list SEMICOLON')
+    def decl(self,value):
+        entry=[]
+        for name in value[1]:
+            entry.append(SymbolTableEntry(name,value[0]))
+        return entry
+    @_('id_list COMMA ID')
+    def id_list(self,value):
+        return value[0]+[value[2]]
+    @_('ID')
+    def id_list(self,value):
+        return [value[0]]   
+    @_('stmt_list stmt')
+    def stmt_list(self, value):
+        return value[0]+[value[1]]
+    @_('')
+    def stmt_list(self,value):
+        return []
+    @_('assign')
+    def stmt(self,value):
+        return value[0]
+    @_('print_stmt')
+    def stmt(self,value):
+        return value[0]
+    @_('ID ASSIGN expr SEMICOLON')
+    def assign(self,value):
+        return Assign(Var(value[0]),value[2])
+    @_('PRINT expr SEMICOLON')
+    def print_stmt(self, value):
+        return value[1]
+   
+    @_('NUMBER')
+    def expr(self, value):
+        return Num(int(value[0]))
+    @_('ID')
+    def expr(self,value):
+        return Var(value[0])
+    @_('expr PLUS expr')
+    def expr(self,value):
+        return BinOp(value[1],value[0],value[2])
+    @_('expr MINUS expr')
+    def expr(self,value):
+        return BinOp(value[1],value[0],value[2])
+    @_('expr TIMES expr')
+    def expr(self,value):
+        return BinOp(value[1],value[0],value[2])
+    @_('expr DIVIDE expr')
+    def expr(self,value):
+        return BinOp(value[1],value[0],value[2])
+    @_('expr REMAINDER expr')
+    def expr(self,value):
+        return BinOp(value[1],value[0],value[2])
+    
     # TODO(week-3, stage-1a): 
     # func_def -> INT ID LPAREN RPAREN LBRACE decl_stmt_list stmt_list RBRACE
     # Build Function(DataType.INT, ID.name). return type and name 
@@ -164,7 +240,8 @@ class TinyCStrParser(Parser):
         Keep this simple for Level 1 --
         structured error recovery is not required this week.
         """
-        raise NotImplementedError("implement TinyCStrParser.error()")
+        print(f'ERROR:{token.value[0]} at lineno {self.lineno}')
+       # raise NotImplementedError("implement TinyCStrParser.error()")
 
 
 if __name__ == '__main__':
