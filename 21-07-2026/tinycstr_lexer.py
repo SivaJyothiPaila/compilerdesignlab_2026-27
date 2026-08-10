@@ -20,6 +20,34 @@ class TinyCStrLexer(Lexer):
 
     # skip spaces between tokens.
     ignore = ' \t'
+    lineno=1
+    ignore_COMMENT=r'//.*'
+    @_(r'\n+')
+    def ignore_newline(self,t):
+        self.lineno+=t.value.count('\n')
+    keywords={
+            'int':'INT',
+            'print':'PRINT',
+        }
+    @_(r'[a-zA-Z_][a-zA-Z0-9]*')
+    def ID(self,t):
+        t.type=self.keywords.get(t.value,'ID')
+        return t
+
+
+    INTEGER=r'[0-9]+'
+    ASSIGN= r'='
+    SEMICOLON=r';'
+    LBRACE=r'{'
+    RBRACE=r'}'
+    COMMA=r','
+    LPAREN=r'\('
+    RPAREN=r'\)'
+    PLUS=r'\+'
+    MINUS=r'-'
+    TIMES=r'\*'
+    DIVIDE=r'/'
+    REMAINDER=r'%'
 
     # TODO(week-2, stage-1a): ignore // line comments.
     # See docs/sly_help.md ###3 for why this must be an `ignore_`-prefixed
@@ -30,16 +58,13 @@ class TinyCStrLexer(Lexer):
     # See docs/sly_help.md ###4 for the standard pattern.
     # @_(r'\n+')
     # def ignore_newline(self, t):
-    #     ...
+    
 
     # ------------------------------------------------------------------
     # Stage 1a: keyword table + identifier rule
     # ------------------------------------------------------------------
     # TODO(week-2, stage-1a): fill in the reserved-word(key-word) table.
-    keywords = {
-        # 'int': 'INT',
-        # 'print': 'PRINT',
-    }
+    
 
     # TODO(week-2, stage-1a): implement the ID rule using the
     # match-then-look-up-in-`keywords` method described in
@@ -89,7 +114,8 @@ class TinyCStrLexer(Lexer):
         Then advance past the single bad character so lexing continues
         (self.index += 1) rather than stopping at the first error.
         """
-        raise NotImplementedError("implement TinyCStrLexer.error()")
+        print(f'ERROR:{t.value[0]} at line no {self.lineno}')
+       # raise NotImplementedError("implement TinyCStrLexer.error()")
 
 
 if __name__ == '__main__':
