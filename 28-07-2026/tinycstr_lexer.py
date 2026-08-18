@@ -50,4 +50,4 @@ class TinyCStrLexer(Lexer):
 
     def error(self, t):
         print(f"ERROR {t.value[0]} {self.lineno}", file=self.error_sink)
-        self.index += 1
+self.index += 1
