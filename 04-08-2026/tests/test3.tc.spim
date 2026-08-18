@@ -1,0 +1,29 @@
+.text
+.globl main
+main:
+    subu $sp, $sp, 4
+    sw   $ra, 0($sp)
+    subu $sp, $sp, 4
+    sw   $fp, 0($sp)
+    addiu $fp, $sp, -12
+    move $sp, $fp
+    li $t0, 5
+    sw $t0,disp($fp)ofa
+    li $t0, 5
+    sw $t0,disp($fp)ofb
+    lw $t0, disp($fp)ofb
+    lw $t1, disp($fp)ofa
+    mul $t2, $t0, $t1
+    lw $t0, disp($fp)ofa
+    add $t1, $t0, $t2
+    lw $t0, disp($fp)ofa
+    lw $t3, disp($fp)ofa
+    mul $t4, $t0, $t3
+    add $t0, $t1, $t4
+    sw $t0,disp($fp)ofc
+    addiu $sp, $fp, 12
+    lw    $fp, 0($sp)
+    addiu $sp, $sp, 4
+    lw    $ra, 0($sp)
+    addiu $sp, $sp, 4
+    jr    $ra

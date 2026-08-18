@@ -65,7 +65,7 @@ class MIPSGenerator:
         self.availability_registers = [True] * 10
         self.triple_index_to_reg = {}
 
-    def allocate_registers(self):
+    def allocate_register(self):
         """Provided. Allocates the first free $tN register."""
         try:
             freeregidx = self.availability_registers.index(True)
@@ -93,7 +93,9 @@ class MIPSGenerator:
         Use self.symbol_table.getSymbol(name).getOffset() to get the
         integer offset, then format it as f"{offset}($fp)".
         """
-        raise NotImplementedError("implement MIPSGenerator.resolve_address()")
+        offset = self.symbol_table.getSymbol(name).getOffset()
+        return f"{offset}($fp)"
+        #raise NotImplementedError("implement MIPSGenerator.resolve_address()")
 
     def load(self, operand, reg):
         """
@@ -108,15 +110,21 @@ class MIPSGenerator:
         by reusing the already-live register from triple_index_to_reg,
         never by loading from memory.
         """
-        raise NotImplementedError("implement MIPSGenerator.load()")
-
+        if is_literal(operand):
+            self.addMIPS(f"li {reg}, {operand}")
+        else:
+            self.addMIPS(f"lw {reg}, disp($fp)of{operand}")
+        #raise NotImplementedError("implement MIPSGenerator.load()")
+        
     def store(self, reg, name):
         """
         TODO(week-4): emit `sw reg, {self.resolve_address(name)}`, then
         deallocate_register(reg) -- once a value has been written back
         to a variable's slot, the register holding it is free to reuse.
         """
-        raise NotImplementedError("implement MIPSGenerator.store()")
+        self.addMIPS(f"sw {reg},disp($fp)of{name}")
+        self.deallocate_register(reg)
+        #raise NotImplementedError("implement MIPSGenerator.store()")
 
     def gen_instr(self, triple):
         """
@@ -153,7 +161,36 @@ class MIPSGenerator:
         example of this dispatch on a small triple program, including
         exactly which registers get allocated/reused/freed at each step.
         """
-        raise NotImplementedError("implement MIPSGenerator.gen_instr()")
+        if isinstance(triple,BinOpTriple):
+            if isinstance(triple.arg1,TripleRef):
+                src1 = self.triple_index_to_reg[triple.arg1.index]
+            else:
+                src1=self.allocate_register()
+                self.load(triple.arg1,src1)
+            if isinstance(triple.arg2, TripleRef):
+                src2 = self.triple_index_to_reg[triple.arg2.index]
+            else:
+                src2 = self.allocate_register()
+                self.load(triple.arg2, src2)
+
+            dest = self.allocate_register()
+            
+            self.addMIPS(f"{MIPS_OP[triple.op]} {dest}, {src1}, {src2}")
+            self.triple_index_to_reg[triple.index] = dest
+            if not isinstance(triple.arg1, TripleRef):
+                self.deallocate_register(src1)
+            if not isinstance(triple.arg2, TripleRef):
+                self.deallocate_register(src2)
+        elif isinstance(triple,AssignTriple):
+            if isinstance(triple.arg1, TripleRef):
+                src = self.triple_index_to_reg[triple.arg1.index]
+            else:
+                src = self.allocate_register()
+                self.load(triple.arg1, src)
+            self.store(src, triple.dest)
+
+        
+        #raise NotImplementedError("implement MIPSGenerator.gen_instr()")
 
     # ------------------------------------------------------------------
     # Prologue / epilogue -- PROVIDED, not a TODO. Exact sequence from
