@@ -65,7 +65,7 @@ class MIPSGenerator:
         self.availability_registers = [True] * 10
         self.triple_index_to_reg = {}
 
-    def allocate_registers(self):
+    def allocate_register(self):
         """Provided. Allocates the first free $tN register."""
         try:
             freeregidx = self.availability_registers.index(True)
@@ -115,7 +115,11 @@ class MIPSGenerator:
         else:
             self.addMIPS(f"lw {reg}, disp($fp)of{operand}")
         #raise NotImplementedError("implement MIPSGenerator.load()")
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 6859de9c51d1cd04fa37ba8b309a69859db87350
     def store(self, reg, name):
         """
         TODO(week-4): emit `sw reg, {self.resolve_address(name)}`, then
@@ -165,15 +169,27 @@ class MIPSGenerator:
             if isinstance(triple.arg1,TripleRef):
                 src1 = self.triple_index_to_reg[triple.arg1.index]
             else:
+<<<<<<< HEAD
                 src1=self.allocate_registers()
+=======
+                src1=self.allocate_register()
+>>>>>>> 6859de9c51d1cd04fa37ba8b309a69859db87350
                 self.load(triple.arg1,src1)
             if isinstance(triple.arg2, TripleRef):
                 src2 = self.triple_index_to_reg[triple.arg2.index]
             else:
+<<<<<<< HEAD
                 src2 = self.allocate_registers()
                 self.load(triple.arg2, src2)
 
             dest = self.allocate_registers()
+=======
+                src2 = self.allocate_register()
+                self.load(triple.arg2, src2)
+
+            dest = self.allocate_register()
+            
+>>>>>>> 6859de9c51d1cd04fa37ba8b309a69859db87350
             self.addMIPS(f"{MIPS_OP[triple.op]} {dest}, {src1}, {src2}")
             self.triple_index_to_reg[triple.index] = dest
             if not isinstance(triple.arg1, TripleRef):
@@ -184,9 +200,17 @@ class MIPSGenerator:
             if isinstance(triple.arg1, TripleRef):
                 src = self.triple_index_to_reg[triple.arg1.index]
             else:
+<<<<<<< HEAD
                 src = self.allocate_registers()
                 self.load(triple.arg1, src)
             self.store(src, triple.dest)        
+=======
+                src = self.allocate_register()
+                self.load(triple.arg1, src)
+            self.store(src, triple.dest)
+
+        
+>>>>>>> 6859de9c51d1cd04fa37ba8b309a69859db87350
         #raise NotImplementedError("implement MIPSGenerator.gen_instr()")
 
     # ------------------------------------------------------------------

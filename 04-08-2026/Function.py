@@ -80,12 +80,25 @@ class Function:
         -> program.compile().)
         """
         self.localSymbolTable.assignOffsetsToSymbols()
+<<<<<<< HEAD
         mips_gen = MIPSGenerator(self.localSymbolTable)
         frame_size = self.localSymbolTable.size()
         self.mipsCode = mips_gen.generate(self.tripleTACstmts.triples, frame_size)
 
 
 
+=======
+
+        mips_gen = MIPSGenerator(self.localSymbolTable)
+        frame_size = self.localSymbolTable.size()
+
+        self.mipsCode = mips_gen.generate(
+        self.tripleTACstmts.triples,
+        frame_size
+    )
+        
+        
+>>>>>>> 6859de9c51d1cd04fa37ba8b309a69859db87350
         #raise NotImplementedError("implement Function.compile()")
 
     def getMipsCode(self):
