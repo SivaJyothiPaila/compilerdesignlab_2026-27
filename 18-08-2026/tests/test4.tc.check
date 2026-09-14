@@ -1,0 +1,15 @@
+1 type error(s) found:
+  line 4: cannot assign DataType.STRING to DataType.INT
+
+Type-checked AST (with any inserted casts):
+Function main
+  Assign
+    Var(a)
+    Const(Hello,DataType.STRING)
+  Assign
+    Var(b)
+    Const(3.14,DataType.DOUBLE)
+  Print
+    Var(a)
+  Print
+    Var(b)
