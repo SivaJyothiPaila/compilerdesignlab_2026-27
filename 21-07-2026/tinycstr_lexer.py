@@ -15,7 +15,7 @@ class TinyCStrLexer(Lexer):
     # ------------------------------------------------------------------
     tokens = {
         INT,ID, INTEGER, PRINT, ASSIGN, SEMICOLON, LBRACE, RBRACE, COMMA,LPAREN, RPAREN,  
-        PLUS, MINUS, TIMES, DIVIDE,REMAINDER,                    
+        PLUS, MINUS, TIMES, DIVIDE, REMAINDER,                    
     }
     lineno = 0
 
@@ -90,7 +90,7 @@ class TinyCStrLexer(Lexer):
         Then advance past the single bad character so lexing continues
         (self.index += 1) rather than stopping at the first error.
         """
-        raise NotImplementedError("implement TinyCStrLexer.error()")
+        #raise NotImplementedError("implement TinyCStrLexer.error()")
 
 
 if __name__ == '__main__':
